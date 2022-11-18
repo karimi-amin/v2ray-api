@@ -4,6 +4,7 @@ namespace App\Repositories\API;
 
 use App\Models\Inbound\Inbound;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class InboundRepository extends BaseAPIRepository
@@ -59,7 +60,7 @@ class InboundRepository extends BaseAPIRepository
             ->count();
 
         if ($check) {
-            $port = rand(10000, 99999);
+            $port = rand(10000, 50000);
         }
 
         $inbound = new Inbound();
@@ -78,6 +79,20 @@ class InboundRepository extends BaseAPIRepository
         $inbound->tag = "inbound-{$port}";
         $inbound->sniffing = $sniffing;
         $inbound->save();
+
+        $configFilePath = '/usr/local/x-ui/bin/config.json';
+        $config = json_decode(File::get($configFilePath), true);
+        $config['inbounds'][] = [
+            'listen' => $inbound ?? null,
+            'port' => $inbound->port,
+            'protocol' => $inbound->protocol,
+            'settings' => $inbound->settings,
+            'streamSettings' => $inbound->stream_settings,
+            'tag' => $inbound->tag,
+            'sniffing' => $inbound->sniffing,
+        ];
+
+        File::put($configFilePath, json_encode($config, JSON_PRETTY_PRINT));
 
         return $inbound;
     }
