@@ -6,7 +6,6 @@
 /public/images
 /public/assets
 /storage/*.key
-/vendor
 .idea
 .vscode
 .env.backup
