@@ -7,7 +7,6 @@ use App\Http\Requests\API\Inbound\IndexInboundRequest;
 use App\Http\Requests\API\Inbound\StoreInboundRequest;
 use App\Http\Resources\API\Inbound\InboundResource;
 use App\Repositories\API\InboundRepository;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Response;
 
 class InboundController extends BaseAPIController
