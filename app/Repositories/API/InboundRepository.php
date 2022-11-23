@@ -71,7 +71,7 @@ class InboundRepository extends BaseAPIRepository
         $inbound->up = 0;
         $inbound->down = 0;
         $inbound->total = 0;
-        $inbound->remark = 'user_' . $port;
+        $inbound->remark = $username ?? 'user_' . $port;
         $inbound->enable = 1;
         $inbound->listen = '';
         $inbound->expiry_time = Carbon::parse($expiryTime)->getTimestampMs();
