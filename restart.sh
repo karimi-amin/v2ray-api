@@ -1,6 +1,6 @@
 #!/bin/bash
 
-modifiedFile=$(find config.json -mmin -2)
+modifiedFile=$(find /usr/local/x-ui/bin/config.json -mmin -2)
 
 length=${#modifiedFile}
 
