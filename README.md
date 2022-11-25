@@ -1,6 +1,6 @@
 sudo apt-get update -y
 sudo apt-get upgrade -y
-sudo apt install nginx -y
+sudo apt install nginx cron -y
 sudo systemctl stop nginx
 sudo systemctl start nginx
 sudo systemctl stop nginx
@@ -20,3 +20,4 @@ sudo chmod -Rf 775 /usr/local/x-ui/bin
 
 upload default file into /etc/nginx/sites-available
 sudo systemctl restart nginx
+crontab -l | { cat; echo "* * * * * modifiedFile=\`find /usr/local/x-ui/bin/config.json -mmin -2\`; length=${#modifiedFile}; if (( length > 0 )); then x-ui restart; fi;"; } | crontab -
