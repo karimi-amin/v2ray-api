@@ -41,6 +41,31 @@ class GenerateInbound extends Command
      */
     public function handle()
     {
+//        for ($i=200; $i<=250; $i++) {
+//            $ch = curl_init();
+//
+//            curl_setopt($ch, CURLOPT_URL, 'http://185.224.129.185:4780/xui/inbound/del/'. $i);
+//            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+//            curl_setopt($ch, CURLOPT_POST, 1);
+//            curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
+//
+//            $headers = array();
+//            $headers[] = 'Accept: application/json, text/plain, */*';
+//            $headers[] = 'Accept-Language: en-US,en;q=0.9,fa;q=0.8';
+//            $headers[] = 'Connection: keep-alive';
+//            $headers[] = 'Content-Length: 0';
+//            $headers[] = 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8';
+//            $headers[] = 'Cookie: lang=en-US; session=MTY3MDc3NjU4MXxEdi1CQkFFQ180SUFBUkFCRUFBQVpmLUNBQUVHYzNSeWFXNW5EQXdBQ2t4UFIwbE9YMVZUUlZJWWVDMTFhUzlrWVhSaFltRnpaUzl0YjJSbGJDNVZjMlZ5XzRNREFRRUVWWE5sY2dIX2hBQUJBd0VDU1dRQkJBQUJDRlZ6WlhKdVlXMWxBUXdBQVFoUVlYTnpkMjl5WkFFTUFBQUFGUC1FRVFFQ0FRVmhaRzFwYmdFRllXUnRhVzRBfDP2R6CTq9vrtdEihsCXb6BqNiJcSSFDtFuC47_8R0sY';
+//            $headers[] = 'Origin: http://185.224.129.185:4780';
+//            $headers[] = 'Referer: http://185.224.129.185:4780/xui/inbounds';
+//            $headers[] = 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36';
+//            $headers[] = 'X-Requested-With: XMLHttpRequest';
+//            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+//
+//            curl_exec($ch);
+//            curl_close($ch);
+//        }
+//        dd(3);
         $count = $this->option('count') ?? 1;
         $expiryTime = !empty($this->option('expire')) ? Carbon::now()->addHour()->addDays($this->option('expire'))->getTimestampMs() : null;
         $total = $this->option('total') * 1024 * 1024 ?? 0;
@@ -67,19 +92,25 @@ class GenerateInbound extends Command
   "clients": [
     {
       "id": "' . $uuid . '",
-      "alterId": 0
+       "email": "",
+            "expiryTime": "",
+            "flow": "xtls-rprx-direct",
+            "limitIp": 0,
+            "totalGB": 0
     }
   ],
-  "disableInsecureEncryption": false
+        "decryption": "none",
+        "fallbacks": []
 }';
 
         $streamSettings = '{
-  "network": "ws",
-  "security": "none",
-  "wsSettings": {
-    "path": "/",
-    "headers": {}
-  }
+        "network": "ws",
+        "security": "none",
+        "wsSettings": {
+          "acceptProxyProtocol": false,
+          "path": "/",
+          "headers": {}
+        }
 }';
 
         $sniffing = '{
@@ -125,12 +156,13 @@ class GenerateInbound extends Command
             'protocol' => $inbound->protocol,
             'settings' => json_decode($inbound->settings),
             'streamSettings' => json_decode('{
-  "network": "ws",
-  "security": "none",
-  "wsSettings": {
-    "path": "/",
-    "headers": []
-  }
+        "network": "ws",
+        "security": "none",
+        "wsSettings": {
+          "acceptProxyProtocol": false,
+          "path": "/",
+          "headers": {}
+        }
 }'),
             'tag' => $inbound->tag,
             'sniffing' => json_decode($inbound->sniffing),
