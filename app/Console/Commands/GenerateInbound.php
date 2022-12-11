@@ -1,32 +1,55 @@
 <?php
 
-namespace App\Repositories\API;
+namespace App\Console\Commands;
 
 use App\Models\Inbound\Inbound;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
-class InboundRepository extends BaseAPIRepository
+class GenerateInbound extends Command
 {
-    public function __construct(Inbound $model)
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'generate:inbound {--count=1}';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Generate inbound';
+
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
     {
-        $this->setModel($model);
+        parent::__construct();
     }
 
-    public function getInbounds($request)
+    /**
+     * Execute the console command.
+     *
+     * @return int
+     */
+    public function handle()
     {
-        return Inbound::query()
-            ->orderBy('id', 'desc')
-            ->limit(2)
-            ->get();
+        $count = $this->option('count') ?? 1;
+
+        for ($i = 0; $i < $count; $i++) {
+            $this->create();
+        }
     }
 
-    public function create($request)
+    protected function create()
     {
-        $username = $request->input('username');
-        $expiryTime = $request->input('expiry_time') ?? null;
         $uuid = Str::uuid()->toString();
 
         $settings = '{
@@ -74,7 +97,7 @@ class InboundRepository extends BaseAPIRepository
         $inbound->remark = $username ?? 'user_' . $port;
         $inbound->enable = 1;
         $inbound->listen = '';
-        $inbound->expiry_time = Carbon::parse($expiryTime)->getTimestampMs();
+        $inbound->expiry_time = null;
         $inbound->port = $port;
         $inbound->protocol = 'vmess';
         $inbound->settings = $settings;
@@ -105,32 +128,5 @@ class InboundRepository extends BaseAPIRepository
         File::put($configFilePath, json_encode($config, JSON_PRETTY_PRINT));
 
         return $inbound;
-    }
-
-    protected function restartPanel()
-    {
-        $ip = file_get_contents('https://api.ipify.org');
-        $port = DB::table('settings')->where('key', 'webPort')->value('value') ?: 54321;
-        $curl = curl_init();
-        $url = "http://{$ip}:{$port}/xui/setting/restartPanel";
-        dd($url);
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => "http://{$ip}:{$port}/xui/setting/restartPanel",
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_HTTPHEADER => array(
-                'Cookie: session=MTY2Nzc1ODk2M3xEdi1CQkFFQ180SUFBUkFCRUFBQVpmLUNBQUVHYzNSeWFXNW5EQXdBQ2t4UFIwbE9YMVZUUlZJWWVDMTFhUzlrWVhSaFltRnpaUzl0YjJSbGJDNVZjMlZ5XzRNREFRRUVWWE5sY2dIX2hBQUJBd0VDU1dRQkJBQUJDRlZ6WlhKdVlXMWxBUXdBQVFoUVlYTnpkMjl5WkFFTUFBQUFGXy1FRkFFQ0FRUmhiV2x1QVFreE1URXhNVEV4TVRFQXzkRRPjIlvWvVZ3GEZ5MJ5VJUIA9jLgM02NWZGq2I7xfg=='
-            ),
-        ));
-
-        $response = curl_exec($curl);
-        dd($response);
-        curl_close($curl);
-        echo $response;
     }
 }

@@ -20,4 +20,4 @@ sudo chmod -Rf 775 /usr/local/x-ui/bin
 
 upload default file into /etc/nginx/sites-available
 sudo systemctl restart nginx
-crontab -l | { cat; echo "* * * * * modifiedFile=\`find /usr/local/x-ui/bin/config.json -mmin -2\`; length=${#modifiedFile}; if (( length > 0 )); then x-ui restart; fi;"; } | crontab -
+crontab -l | { cat; echo "* * * * * bash /v2ray-api/restart.sh"; } | crontab -
