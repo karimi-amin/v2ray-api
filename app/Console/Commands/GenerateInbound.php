@@ -15,7 +15,7 @@ class GenerateInbound extends Command
      *
      * @var string
      */
-    protected $signature = 'generate:inbound {--count=1} {--expire=} {--total=}';
+    protected $signature = 'generate:inbound {--count=1} {--expire=} {--total=} --{protocol=vmess}';
 
     /**
      * The console command description.
@@ -44,11 +44,12 @@ class GenerateInbound extends Command
         $count = $this->option('count') ?? 1;
         $expiryTime = !empty($this->option('expire')) ? Carbon::now()->addHour()->addDays($this->option('expire'))->getTimestampMs() : null;
         $total = $this->option('total') * 1024 * 1024 ?? 0;
+        $protocol = $this->option('protocol') ?? 'vmess';
 
         $progressBar = $this->output->createProgressBar($count);
 
         for ($i = 0; $i < $count; $i++) {
-            $this->create($expiryTime, $total);
+            $this->create($expiryTime, $total, $protocol);
             $progressBar->advance();
         }
 
@@ -58,7 +59,7 @@ class GenerateInbound extends Command
         return Command::SUCCESS;
     }
 
-    protected function create($expiryTime = null, $total = 0)
+    protected function create($expiryTime = null, $total = 0, $protocol = 'vmess')
     {
         $uuid = Str::uuid()->toString();
 
