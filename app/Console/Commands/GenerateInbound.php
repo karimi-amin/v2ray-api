@@ -15,7 +15,7 @@ class GenerateInbound extends Command
      *
      * @var string
      */
-    protected $signature = 'generate:inbound {--count=1} {--expire=} {--total=} --{protocol=vmess}';
+    protected $signature = 'generate:inbound {--count=1} {--expire=} {--total=} {--protocol=}';
 
     /**
      * The console command description.
@@ -110,7 +110,7 @@ class GenerateInbound extends Command
         $inbound->listen = '';
         $inbound->expiry_time = $expiryTime;
         $inbound->port = $port;
-        $inbound->protocol = 'vmess';
+        $inbound->protocol = $protocol;
         $inbound->settings = $settings;
         $inbound->stream_settings = $streamSettings;
         $inbound->tag = "inbound-{$port}";
