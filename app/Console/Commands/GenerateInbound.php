@@ -42,8 +42,8 @@ class GenerateInbound extends Command
     public function handle()
     {
         $count = $this->option('count') ?? 1;
-        $expiryTime = !empty($this->option('expire')) ? Carbon::now()->addDays($this->option('expire'))->getTimestampMs() : null;
-        $total = $this->option('total') ?? 0;
+        $expiryTime = !empty($this->option('expire')) ? Carbon::now()->addHour()->addDays($this->option('expire'))->getTimestampMs() : null;
+        $total = $this->option('total') * 1024 * 1024 ?? 0;
 
         $progressBar = $this->output->createProgressBar($count);
 
