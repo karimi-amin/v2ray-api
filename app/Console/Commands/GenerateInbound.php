@@ -43,9 +43,14 @@ class GenerateInbound extends Command
     {
         $count = $this->option('count') ?? 1;
 
+        $progressBar = $this->output->createProgressBar($count);
+
         for ($i = 0; $i < $count; $i++) {
             $this->create();
+            $progressBar->advance();
         }
+
+        $progressBar->finish();
     }
 
     protected function create()
