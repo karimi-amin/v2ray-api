@@ -51,6 +51,9 @@ class GenerateInbound extends Command
         }
 
         $progressBar->finish();
+        $this->newLine(1);
+
+        return Command::SUCCESS;
     }
 
     protected function create()
